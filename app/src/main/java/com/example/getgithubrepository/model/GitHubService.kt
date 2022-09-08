@@ -1,7 +1,6 @@
-package com.example.getgithubrepository
+package com.example.getgithubrepository.model
 
-import okhttp3.Request
-import okhttp3.ResponseBody
+import com.example.getgithubrepository.model.UserDataList
 import retrofit2.Call
 import retrofit2.http.*
 

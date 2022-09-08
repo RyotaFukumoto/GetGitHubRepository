@@ -1,17 +1,17 @@
 package com.example.getgithubrepository
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.getgithubrepository.databinding.ActivityMainBinding
-import com.google.firebase.database.core.Repo
-import okhttp3.*
+import com.example.getgithubrepository.model.GitHubService
+import com.example.getgithubrepository.model.UserDataList
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
-import okhttp3.Call
 import retrofit2.Callback
 import retrofit2.Response
 
@@ -30,21 +30,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.button.setOnClickListener(this)
+        binding.button2.setOnClickListener {
+            val intent = Intent(this, WebViewActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onClick(v: View?) {
 
         val userNameTextView = binding.userNemeText
         val text = userNameTextView.text.toString()
-        val request = service.getUserNameList(text)
+        // 通信用のクラスに分ける
 
+        val request = service.getUserNameList(text)
         request.enqueue(object : Callback<UserDataList> {
             override fun onResponse(
                 call: retrofit2.Call<UserDataList>,
                 response: Response<UserDataList>
             ) {
                 try{
-                    val arr: Response<UserDataList> = response
+                    val arr: UserDataList? = response.body()
                     Log.d("onResponse", arr.toString())
                 }catch (e: IOException){
                     Log.d("onResponse", "IOException")
