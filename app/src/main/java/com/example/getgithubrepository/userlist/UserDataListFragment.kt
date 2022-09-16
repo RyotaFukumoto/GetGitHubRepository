@@ -1,4 +1,4 @@
-package com.example.getgithubrepository
+package com.example.getgithubrepository.userlist
 
 import android.os.Bundle
 import android.util.Log
@@ -7,9 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.getgithubrepository.OnItemClickListener
+import com.example.getgithubrepository.R
+import com.example.getgithubrepository.UserFragment
+import com.example.getgithubrepository.UserListRecyclerViewAdapter
 import com.example.getgithubrepository.databinding.FragmentUserDataListBinding
 import com.example.getgithubrepository.model.GitHubService
 import com.example.getgithubrepository.model.UserData
@@ -22,11 +27,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
 
-class UserDataListFragment : Fragment(), View.OnClickListener  {
+class UserDataListFragment : Fragment(), View.OnClickListener, OnItemClickListener {
     private lateinit var binding: FragmentUserDataListBinding
-    private lateinit var viewModel: UserDataViewModel
 
-    private lateinit var userDataViewModel: UserDataViewModel
+    private val userDataViewModel:UserDataViewModel by activityViewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: UserListRecyclerViewAdapter
     private val retrofit = Retrofit.Builder()
@@ -37,30 +41,14 @@ class UserDataListFragment : Fragment(), View.OnClickListener  {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
         binding.button.setOnClickListener(this)
-
         recyclerView = binding.list
         val dividerItemDecoration =
             DividerItemDecoration(view.context , LinearLayoutManager(view.context).orientation)
         recyclerView.addItemDecoration(dividerItemDecoration)
-        adapter = UserListRecyclerViewAdapter(view.context, listOf())
+        adapter = UserListRecyclerViewAdapter(view.context, listOf(),this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(view.context)
-        adapter.setOnItemClickListener(
-            object : UserListRecyclerViewAdapter.OnItemClickListener {
-                override fun onItemClick(userData: UserData) {
-                    userDataViewModel.initUserDataParameter(userData)
-                    val userDataFragment = UserFragment()
-                    val fragmentManager: FragmentManager = parentFragmentManager
-                    val transaction = fragmentManager.beginTransaction()
-                    transaction.replace(R.id.container, userDataFragment)
-                    transaction.addToBackStack(null)
-                    transaction.commit()
-                }
-            }
-        )
     }
 
     override fun onCreateView(
@@ -72,7 +60,7 @@ class UserDataListFragment : Fragment(), View.OnClickListener  {
 
     override fun onClick(v: View?) {
 
-        val userNameTextView = binding.userNemeText
+        val userNameTextView = binding.userSearchText
         val text = userNameTextView.text.toString()
         // 通信用のクラスに分ける
 
@@ -86,7 +74,8 @@ class UserDataListFragment : Fragment(), View.OnClickListener  {
                     if (response.body() != null) {
                         val arr: UserDataList = response.body()!!
                         if (v != null) {
-                            recyclerView.adapter = UserListRecyclerViewAdapter(v.context,arr.items)
+                            ///　値の更新方法がないか調べる
+                            recyclerView.adapter = UserListRecyclerViewAdapter(v.context,arr.items,this@UserDataListFragment)
                         }
                         Log.d("onResponse", arr.toString())
                     }
@@ -99,5 +88,15 @@ class UserDataListFragment : Fragment(), View.OnClickListener  {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         })
+    }
+
+    override fun onItemClick(userData: UserData) {
+        userDataViewModel.initUserDataParameter(userData)
+        val userFragment = UserFragment()
+        val fragmentManager: FragmentManager = parentFragmentManager
+        val transaction = fragmentManager.beginTransaction()
+        transaction.replace(R.id.container, userFragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
     }
 }

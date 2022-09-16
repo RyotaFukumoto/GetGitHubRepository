@@ -9,6 +9,8 @@
         <entry key="app/src/main/res/layout/fragment_user.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_user_data.xml" value="0.14427083333333332" />
         <entry key="app/src/main/res/layout/fragment_user_data_list.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_user_repo.xml" value="0.19322916666666667" />
+        <entry key="app/src/main/res/layout/fragment_user_repo_list.xml" value="0.16354166666666667" />
         <entry key="app/src/main/res/layout/fragment_web_view.xml" value="0.3619791666666667" />
         <entry key="app/src/main/res/layout/lits_item.xml" value="0.37604166666666666" />
       </map>

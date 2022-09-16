@@ -9,7 +9,7 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context=".UserDataListFragment"
+    tools:context=".userlist.UserDataListFragment"
     tools:listitem="@layout/fragment_user_data" >
     <LinearLayout
         android:id="@+id/linear"
@@ -23,7 +23,7 @@
         >
 
         <EditText
-            android:id="@+id/user_neme_text"
+            android:id="@+id/user_search_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

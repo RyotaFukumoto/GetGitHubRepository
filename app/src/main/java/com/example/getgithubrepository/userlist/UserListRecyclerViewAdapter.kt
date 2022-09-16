@@ -9,24 +9,23 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 
+interface OnItemClickListener {
+    fun onItemClick(userData:com.example.getgithubrepository.model.UserData)
+}
 
 class UserListRecyclerViewAdapter(
     private val context: Context,
-    private val values: List<com.example.getgithubrepository.model.UserData>
+    private val values: List<com.example.getgithubrepository.model.UserData>,
+    private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<UserListRecyclerViewAdapter.UserDataListRecyclerViewHolder>() {
-    private lateinit var listener: OnItemClickListener
-
-    interface OnItemClickListener {
-        fun onItemClick(userData:com.example.getgithubrepository.model.UserData)
-    }
-
-    fun setOnItemClickListener(listener: OnItemClickListener) {
-        this.listener = listener
-    }
 
     class UserDataListRecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var imageView: ImageView = itemView.findViewById(R.id.image)
-        var textView: TextView = itemView.findViewById(R.id.name)
+        var imageView: ImageView
+        var textView: TextView
+        init {
+            imageView = itemView.findViewById(R.id.user_data_image)
+            textView = itemView.findViewById(R.id.user_data_name)
+        }
 
     }
 
