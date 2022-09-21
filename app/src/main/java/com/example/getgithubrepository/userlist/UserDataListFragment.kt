@@ -11,10 +11,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.getgithubrepository.OnItemClickListener
 import com.example.getgithubrepository.R
-import com.example.getgithubrepository.UserFragment
-import com.example.getgithubrepository.UserListRecyclerViewAdapter
+import com.example.getgithubrepository.UserRepoListFragment
 import com.example.getgithubrepository.databinding.FragmentUserDataListBinding
 import com.example.getgithubrepository.model.GitHubService
 import com.example.getgithubrepository.model.UserData
@@ -27,7 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
 
-class UserDataListFragment : Fragment(), View.OnClickListener, OnItemClickListener {
+class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickListener {
     private lateinit var binding: FragmentUserDataListBinding
 
     private val userDataViewModel:UserDataViewModel by activityViewModels()
@@ -90,9 +88,9 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnItemClickListen
         })
     }
 
-    override fun onItemClick(userData: UserData) {
+    override fun onUserItemClick(userData: UserData) {
         userDataViewModel.initUserDataParameter(userData)
-        val userFragment = UserFragment()
+        val userFragment = UserRepoListFragment()
         val fragmentManager: FragmentManager = parentFragmentManager
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(R.id.container, userFragment)

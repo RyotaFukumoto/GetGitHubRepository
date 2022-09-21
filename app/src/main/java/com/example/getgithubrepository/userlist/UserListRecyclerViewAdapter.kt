@@ -1,4 +1,4 @@
-package com.example.getgithubrepository
+package com.example.getgithubrepository.userlist
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
@@ -8,15 +8,16 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.example.getgithubrepository.R
 
-interface OnItemClickListener {
-    fun onItemClick(userData:com.example.getgithubrepository.model.UserData)
+interface OnUserItemClickListener {
+    fun onUserItemClick(userData:com.example.getgithubrepository.model.UserData)
 }
 
 class UserListRecyclerViewAdapter(
     private val context: Context,
     private val values: List<com.example.getgithubrepository.model.UserData>,
-    private val listener: OnItemClickListener
+    private val listener: OnUserItemClickListener
 ) : RecyclerView.Adapter<UserListRecyclerViewAdapter.UserDataListRecyclerViewHolder>() {
 
     class UserDataListRecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -40,7 +41,7 @@ class UserListRecyclerViewAdapter(
         holder.textView.text = userData.login
         Glide.with(context).load(userData.avatar_url).into(holder.imageView)
         holder.itemView.setOnClickListener {
-            listener.onItemClick(userData)
+            listener.onUserItemClick(userData)
         }
     }
 

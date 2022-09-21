@@ -6,14 +6,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.activityViewModels
-import com.bumptech.glide.Glide
-import com.example.getgithubrepository.databinding.FragmentUserBinding
-import com.example.getgithubrepository.databinding.FragmentUserDataListBinding
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.getgithubrepository.databinding.FragmentUserRepoListBinding
 import com.example.getgithubrepository.model.GitHubService
-import com.example.getgithubrepository.model.UserDataList
 import com.example.getgithubrepository.model.UserDataViewModel
 import com.example.getgithubrepository.model.UserRepo
 import retrofit2.Callback
@@ -21,11 +19,14 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import com.bumptech.glide.Glide
 
-class UserFragment : Fragment() {
+
+class UserRepoListFragment : Fragment(),OnUserRepoItemClickListener {
     private val userDataViewModel: UserDataViewModel by activityViewModels()
-    private lateinit var binding: FragmentUserBinding
-
+    private lateinit var binding: FragmentUserRepoListBinding
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: UserRepoRecyclerViewAdapter
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://api.github.com/")
         .addConverterFactory(GsonConverterFactory.create())
@@ -35,7 +36,7 @@ class UserFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val userName = userDataViewModel.userData.login
         val request = service.getUserReposList(userName)
         request.enqueue(object : Callback<List<UserRepo>> {
@@ -46,7 +47,7 @@ class UserFragment : Fragment() {
                 try{
                     if (response.body() != null) {
                         val arr: List<UserRepo> = response.body()!!
-
+                        recyclerView.adapter = UserRepoRecyclerViewAdapter(inflater.context,arr,this@UserRepoListFragment)
                         Log.d("onResponse", arr.toString())
                     }
                 }catch (e: IOException){
@@ -58,7 +59,7 @@ class UserFragment : Fragment() {
                 TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
         })
-        binding = FragmentUserBinding.inflate(inflater, container, false)
+        binding = FragmentUserRepoListBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -67,7 +68,17 @@ class UserFragment : Fragment() {
         val textView = binding.userDataName
         val imageView = binding.userDataImage
         textView.text = userDataViewModel.userData.login
+        recyclerView = binding.userRepoList
         Glide.with(this).load(userDataViewModel.userData.avatar_url).into(imageView)
+        val dividerItemDecoration =
+            DividerItemDecoration(view.context , LinearLayoutManager(view.context).orientation)
+        recyclerView.addItemDecoration(dividerItemDecoration)
+        adapter = UserRepoRecyclerViewAdapter(view.context, listOf(),this)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(view.context)
+    }
 
+    override fun onUserRepoItemClick(repo: UserRepo) {
+        TODO("Not yet implemented")
     }
 }

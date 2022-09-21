@@ -1,13 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/repo_list"
-    android:name="com.example.getgithubrepository.UserRepoFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
-    app:layoutManager="LinearLayoutManager"
-    tools:context=".UserRepoFragment"
-    tools:listitem="@layout/fragment_user_repo" />
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".UserRepoListFragment"
+    android:background="@color/white">
+    <LinearLayout
+        android:id="@+id/linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        tools:ignore="UseCompoundDrawables"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/user_data_image"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/user_data_name"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/user_repo_list"
+        android:name="com.example.getgithubrepository.UserRepoFragment"
+        android:layout_width="409dp"
+        android:layout_height="652dp"
+        app:layoutManager="LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linear"
+        tools:context=".UserRepoListFragment"
+        tools:listitem="@layout/fragment_user_repo" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

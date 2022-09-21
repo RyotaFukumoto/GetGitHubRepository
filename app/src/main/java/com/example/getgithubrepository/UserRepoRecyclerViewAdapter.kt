@@ -1,49 +1,45 @@
 package com.example.getgithubrepository
 
+import android.content.Context
+import android.net.wifi.p2p.WifiP2pManager
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
 import com.example.getgithubrepository.placeholder.PlaceholderContent.PlaceholderItem
 import com.example.getgithubrepository.databinding.FragmentUserRepoBinding
+import com.example.getgithubrepository.model.UserRepo
 
-/**
- * [RecyclerView.Adapter] that can display a [PlaceholderItem].
- * TODO: Replace the implementation with code for your data type.
- */
+interface OnUserRepoItemClickListener {
+    fun onUserRepoItemClick(repo: UserRepo)
+}
+
 class UserRepoRecyclerViewAdapter(
-    private val values: List<PlaceholderItem>
-) : RecyclerView.Adapter<UserRepoRecyclerViewAdapter.ViewHolder>() {
+    private val context: Context,
+    private val values: List<UserRepo>,
+    private val listener: OnUserRepoItemClickListener
+) : RecyclerView.Adapter<UserRepoRecyclerViewAdapter.UserRepoListRecycleViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-
-        return ViewHolder(
-            FragmentUserRepoBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-        )
-
+    class UserRepoListRecycleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var textView: TextView
+        init {
+            textView = itemView.findViewById(R.id.item_text)
+        }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserRepoListRecycleViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        val view = inflater.inflate(R.layout.fragment_user_repo, parent, false)
+        return UserRepoListRecycleViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: UserRepoListRecycleViewHolder, position: Int) {
         val item = values[position]
-        holder.idView.text = item.id
-        holder.contentView.text = item.content
+        holder.textView.text = item.name
     }
 
     override fun getItemCount(): Int = values.size
-
-    inner class ViewHolder(binding: FragmentUserRepoBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        val idView: TextView = binding.itemNumber
-        val contentView: TextView = binding.content
-
-        override fun toString(): String {
-            return super.toString() + " '" + contentView.text + "'"
-        }
-    }
 
 }
