@@ -3,9 +3,9 @@ package com.example.getgithubrepository.model
 import androidx.lifecycle.ViewModel
 
 class UserDataViewModel: ViewModel() {
-    lateinit var userData: UserData
+    lateinit var userListData: UserListData
 
-    fun initUserDataParameter(userData: UserData) {
-        this.userData = userData
+    fun initUserDataParameter(userListData: UserListData) {
+        this.userListData = userListData
     }
 }

@@ -5,8 +5,25 @@ import retrofit2.http.*
 
 interface GitHubService {
     @GET("search/users")
-    fun getUserNameList(@Query("q") userName: String):Call<UserDataList>
+    fun getUserNameList(
+        @Header("Authorization") accessToken: String,
+        @Query("q") userName: String,
+        @Query("per_page") perPage: String,
+        @Query("page") page: String
+
+    ):Call<UserDataList>
+
+    @GET("users/{user_name}")
+    fun getUserData(
+        @Header("Authorization") accessToken: String,
+        @Path("user_name") userName: String,
+    ):Call<UserData>
 
     @GET("users/{user_name}/repos")
-    fun getUserReposList(@Path("user_name") userName: String):Call<List<UserRepo>>
+    fun getUserReposList(
+        @Header("Authorization") accessToken: String,
+        @Path("user_name") userName: String,
+        @Query("per_page") perPage: String,
+        @Query("page") page: String
+    ):Call<List<UserRepo>>
 }

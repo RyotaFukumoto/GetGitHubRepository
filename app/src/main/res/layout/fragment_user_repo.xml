@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal">
 
     <TextView
@@ -9,7 +10,41 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/text_margin"
-
-        android:textAppearance="?attr/textAppearanceListItem" />
-
-</LinearLayout>
+        android:textSize="18dp"
+        android:textAppearance="?attr/textAppearanceListItem"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+    <LinearLayout
+        android:id="@+id/linear"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="@id/item_text"
+        app:layout_constraintTop_toBottomOf="@id/item_text"
+        app:layout_constraintEnd_toEndOf="@id/item_text"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/language"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:layout_weight="0.5"/>
+        <TextView
+            android:id="@+id/stargazers_count"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/item_text"
+        app:layout_constraintEnd_toEndOf="@id/item_text"
+        app:layout_constraintTop_toBottomOf="@id/linear"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

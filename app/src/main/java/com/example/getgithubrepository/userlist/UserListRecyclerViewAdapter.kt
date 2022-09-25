@@ -11,12 +11,12 @@ import com.bumptech.glide.Glide
 import com.example.getgithubrepository.R
 
 interface OnUserItemClickListener {
-    fun onUserItemClick(userData:com.example.getgithubrepository.model.UserData)
+    fun onUserItemClick(userListData:com.example.getgithubrepository.model.UserListData)
 }
 
 class UserListRecyclerViewAdapter(
     private val context: Context,
-    private val values: List<com.example.getgithubrepository.model.UserData>,
+    private val values: List<com.example.getgithubrepository.model.UserListData>,
     private val listener: OnUserItemClickListener
 ) : RecyclerView.Adapter<UserListRecyclerViewAdapter.UserDataListRecyclerViewHolder>() {
 

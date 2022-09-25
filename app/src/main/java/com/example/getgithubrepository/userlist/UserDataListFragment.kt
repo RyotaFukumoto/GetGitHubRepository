@@ -1,5 +1,6 @@
 package com.example.getgithubrepository.userlist
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -14,10 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.getgithubrepository.R
 import com.example.getgithubrepository.UserRepoListFragment
 import com.example.getgithubrepository.databinding.FragmentUserDataListBinding
-import com.example.getgithubrepository.model.GitHubService
-import com.example.getgithubrepository.model.UserData
-import com.example.getgithubrepository.model.UserDataList
-import com.example.getgithubrepository.model.UserDataViewModel
+import com.example.getgithubrepository.model.*
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -31,6 +29,9 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
     private val userDataViewModel:UserDataViewModel by activityViewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: UserListRecyclerViewAdapter
+    private var pageCount = 1
+    private lateinit var responseBody: UserDataList
+
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://api.github.com/")
         .addConverterFactory(GsonConverterFactory.create())
@@ -47,6 +48,39 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
         adapter = UserListRecyclerViewAdapter(view.context, listOf(),this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(view.context)
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (!recyclerView.canScrollVertically(1)) {
+                    val userNameTextView = binding.userSearchText
+                    val text = userNameTextView.text.toString()
+                    val request = service.getUserNameList("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",text,"100",pageCount.toString())
+                    request.enqueue(object : Callback<UserDataList> {
+                        override fun onResponse(
+                            call: retrofit2.Call<UserDataList>,
+                            response: Response<UserDataList>
+                        ) {
+                            try{
+                                if (response.body() != null && response.body()!!.items.isNotEmpty()) {
+                                    responseBody.items.addAll(response.body()!!.items)
+                                    ///　値の更新方法がないか調べる
+                                    recyclerView.adapter = UserListRecyclerViewAdapter(view.context,responseBody.items,this@UserDataListFragment)
+                                    pageCount++
+
+                                    Log.d("onResponse", responseBody.toString())
+                                }
+                            }catch (e: IOException){
+                                Log.d("onResponse", "IOException")
+                            }
+                        }
+
+                        override fun onFailure(call: retrofit2.Call<UserDataList>, t: Throwable) {
+                            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                        }
+                    })
+                }
+            }
+        })
     }
 
     override fun onCreateView(
@@ -62,20 +96,21 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
         val text = userNameTextView.text.toString()
         // 通信用のクラスに分ける
 
-        val request = service.getUserNameList(text)
+        val request = service.getUserNameList("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",text,"100",pageCount.toString())
         request.enqueue(object : Callback<UserDataList> {
             override fun onResponse(
                 call: retrofit2.Call<UserDataList>,
                 response: Response<UserDataList>
             ) {
                 try{
-                    if (response.body() != null) {
-                        val arr: UserDataList = response.body()!!
+                    if (response.body() != null ) {
+                        responseBody = response.body()!!
                         if (v != null) {
                             ///　値の更新方法がないか調べる
-                            recyclerView.adapter = UserListRecyclerViewAdapter(v.context,arr.items,this@UserDataListFragment)
+                            recyclerView.adapter = UserListRecyclerViewAdapter(v.context,responseBody.items,this@UserDataListFragment)
+                            pageCount++
                         }
-                        Log.d("onResponse", arr.toString())
+                        Log.d("onResponse", response.toString())
                     }
                 }catch (e: IOException){
                     Log.d("onResponse", "IOException")
@@ -88,8 +123,8 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
         })
     }
 
-    override fun onUserItemClick(userData: UserData) {
-        userDataViewModel.initUserDataParameter(userData)
+    override fun onUserItemClick(userListData: UserListData) {
+        userDataViewModel.initUserDataParameter(userListData)
         val userFragment = UserRepoListFragment()
         val fragmentManager: FragmentManager = parentFragmentManager
         val transaction = fragmentManager.beginTransaction()

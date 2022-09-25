@@ -12,7 +12,7 @@ data class UserRepo(
     @SerializedName("full_name")
     var full_name: String,
     @SerializedName("owner")
-    var owner: UserData,
+    var owner: UserListData,
     @SerializedName("private")
     var private: Boolean,
     @SerializedName("html_url")

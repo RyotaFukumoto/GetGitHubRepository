@@ -1,15 +1,12 @@
 package com.example.getgithubrepository
 
 import android.content.Context
-import android.net.wifi.p2p.WifiP2pManager
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
-import com.example.getgithubrepository.placeholder.PlaceholderContent.PlaceholderItem
-import com.example.getgithubrepository.databinding.FragmentUserRepoBinding
 import com.example.getgithubrepository.model.UserRepo
 
 interface OnUserRepoItemClickListener {
@@ -18,14 +15,20 @@ interface OnUserRepoItemClickListener {
 
 class UserRepoRecyclerViewAdapter(
     private val context: Context,
-    private val values: List<UserRepo>,
+    private val values: MutableList<UserRepo>,
     private val listener: OnUserRepoItemClickListener
 ) : RecyclerView.Adapter<UserRepoRecyclerViewAdapter.UserRepoListRecycleViewHolder>() {
 
     class UserRepoListRecycleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var textView: TextView
+        var repoTextView: TextView
+        var languageTextView: TextView
+        var stargazersCountTextView: TextView
+        var descriptionTextView: TextView
         init {
-            textView = itemView.findViewById(R.id.item_text)
+            repoTextView = itemView.findViewById(R.id.item_text)
+            languageTextView = itemView.findViewById(R.id.language)
+            stargazersCountTextView = itemView.findViewById(R.id.stargazers_count)
+            descriptionTextView = itemView.findViewById(R.id.description)
         }
     }
 
@@ -37,9 +40,29 @@ class UserRepoRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: UserRepoListRecycleViewHolder, position: Int) {
         val item = values[position]
-        holder.textView.text = item.name
+        holder.repoTextView.text = item.name
+        val language = if (item.language.isNullOrEmpty()) "" else item.language
+        holder.languageTextView.text = context.getString(R.string.repo_language,language)
+        holder.stargazersCountTextView.text = context.getString(R.string.repo_stargazers_count, item.stargazers_count.toString())
+        val description = if (item.description.isNullOrEmpty()) "" else item.description
+        holder.descriptionTextView.text = context.getString(R.string.repo_description, description)
+        holder.itemView.setOnClickListener {
+            listener.onUserRepoItemClick(item)
+        }
     }
 
-    override fun getItemCount(): Int = values.size
+    override fun getItemCount(): Int {
+        val itemList :MutableList<UserRepo> = mutableListOf()
+        if(values.size != 0) {
+            for (item in values) {
+                if (!item.fork) {
+                    itemList.add(item)
+                }
+            }
+            values.clear()
+            values.addAll(itemList)
+        }
+        return values.size
+    }
 
 }
