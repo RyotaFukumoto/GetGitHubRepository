@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">GetGitHubRepository</string>
+    <string name="search_users">https://api.github.com/</string>
+    <string name="search">検索</string>
+    <string name="user_name">ユーザー名：%1$s</string>
+    <string name="user_full_name">フルネーム：%1$s</string>
+    <string name="user_followers">フォロワー数：%1$s</string>
+    <string name="user_following">ファロイング数：%1$s</string>
+    <string name="repo_language">開発言語：%1$s</string>
+    <string name="repo_stargazers_count">スター数：%1$s</string>
+    <string name="repo_description">説明文：\n%1$s</string>
+
 </resources>
