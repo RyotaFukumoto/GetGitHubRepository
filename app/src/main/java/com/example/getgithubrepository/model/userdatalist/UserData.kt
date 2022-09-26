@@ -1,4 +1,4 @@
-package com.example.getgithubrepository.model
+package com.example.getgithubrepository.model.userdatalist
 
 data class UserData(
     val login: String,

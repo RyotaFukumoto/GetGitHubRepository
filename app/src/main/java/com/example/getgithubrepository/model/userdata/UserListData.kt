@@ -1,4 +1,4 @@
-package com.example.getgithubrepository.model
+package com.example.getgithubrepository.model.userdata
 
 data class UserListData(
     var login: String,

@@ -1,4 +1,4 @@
-package com.example.getgithubrepository
+package com.example.getgithubrepository.userrepo
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
@@ -6,8 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.example.getgithubrepository.R
 
-import com.example.getgithubrepository.model.UserRepo
+import com.example.getgithubrepository.model.userrepo.UserRepo
 
 interface OnUserRepoItemClickListener {
     fun onUserRepoItemClick(repo: UserRepo)

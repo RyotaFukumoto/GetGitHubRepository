@@ -1,4 +1,6 @@
-package com.example.getgithubrepository.model
+package com.example.getgithubrepository.model.userdatalist
+
+import com.example.getgithubrepository.model.userdata.UserListData
 
 data class UserDataList(
     var total_count: Int,

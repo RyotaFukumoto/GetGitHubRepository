@@ -1,9 +1,13 @@
-package com.example.getgithubrepository.model
+package com.example.getgithubrepository.model.userdata
 
 import androidx.lifecycle.ViewModel
 
 class UserDataViewModel: ViewModel() {
-    lateinit var userListData: UserListData
+    private lateinit var userListData: UserListData
+
+    fun get(): UserListData {
+        return userListData
+    }
 
     fun initUserDataParameter(userListData: UserListData) {
         this.userListData = userListData

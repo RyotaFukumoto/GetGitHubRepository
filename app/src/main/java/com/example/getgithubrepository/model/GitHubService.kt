@@ -1,5 +1,8 @@
 package com.example.getgithubrepository.model
 
+import com.example.getgithubrepository.model.userdatalist.UserData
+import com.example.getgithubrepository.model.userdatalist.UserDataList
+import com.example.getgithubrepository.model.userrepo.UserRepo
 import retrofit2.Call
 import retrofit2.http.*
 

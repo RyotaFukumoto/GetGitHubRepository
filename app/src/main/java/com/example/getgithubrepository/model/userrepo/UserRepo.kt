@@ -1,5 +1,6 @@
-package com.example.getgithubrepository.model
+package com.example.getgithubrepository.model.userrepo
 
+import com.example.getgithubrepository.model.userdata.UserListData
 import com.google.gson.annotations.SerializedName
 
 data class UserRepo(

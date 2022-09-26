@@ -1,4 +1,4 @@
-package com.example.getgithubrepository
+package com.example.getgithubrepository.userrepo
 
 import android.content.Context
 import android.net.Uri
@@ -14,11 +14,13 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.getgithubrepository.R
 import com.example.getgithubrepository.databinding.FragmentUserRepoListBinding
-import com.example.getgithubrepository.model.GitHubService
-import com.example.getgithubrepository.model.UserData
-import com.example.getgithubrepository.model.UserDataViewModel
-import com.example.getgithubrepository.model.UserRepo
+import com.example.getgithubrepository.model.*
+import com.example.getgithubrepository.model.userdata.UserDataViewModel
+import com.example.getgithubrepository.model.userdatalist.UserData
+import com.example.getgithubrepository.model.userrepo.UserRepo
+import com.example.getgithubrepository.model.userrepo.UserRepoViewModel
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -39,12 +41,12 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
     private val service = retrofit.create(GitHubService::class.java)
     private var mContext: Context? = null
 
-    private val responseBody: MutableList<UserRepo> = mutableListOf()
+    private val responseBody: UserRepoViewModel = UserRepoViewModel()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val userName = userDataViewModel.userListData.login
+        val userName = userDataViewModel.get().login
         mContext = inflater.context
         val userRequest = service.getUserData("",userName)
         userRequest.enqueue(object : Callback<UserData> {
@@ -85,8 +87,9 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
             ) {
                 try{
                     if (response.body() != null) {
-                        responseBody.addAll(response.body() as MutableList<UserRepo>)
-                        recyclerView.adapter = UserRepoRecyclerViewAdapter(inflater.context,responseBody,this@UserRepoListFragment)
+                        val userRepoList: List<UserRepo>? = response.body()
+                        responseBody.initUserRepoParameter(userRepoList as MutableList)
+                        recyclerView.adapter = UserRepoRecyclerViewAdapter(inflater.context,responseBody.get(),this@UserRepoListFragment)
                         Log.d("onResponse", responseBody.toString())
                         pageCount++
                     }
@@ -112,7 +115,7 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
         adapter = UserRepoRecyclerViewAdapter(view.context, mutableListOf(),this)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(view.context)
-        val userName = userDataViewModel.userListData.login
+        val userName = userDataViewModel.get().login
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -125,8 +128,8 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
                         ) {
                             try{
                                 if (response.body() != null && response.body()!!.isNotEmpty()) {
-                                    responseBody.addAll(response.body() as MutableList<UserRepo>)
-                                    recyclerView.adapter = UserRepoRecyclerViewAdapter(view.context,responseBody,this@UserRepoListFragment)
+                                    responseBody.add(response.body() as MutableList)
+                                    recyclerView.adapter = UserRepoRecyclerViewAdapter(view.context,responseBody.get(),this@UserRepoListFragment)
                                     Log.d("onResponse", responseBody.toString())
                                     pageCount++
 
