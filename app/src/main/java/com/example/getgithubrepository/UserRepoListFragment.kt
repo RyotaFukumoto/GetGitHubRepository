@@ -46,7 +46,7 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
     ): View {
         val userName = userDataViewModel.userListData.login
         mContext = inflater.context
-        val userRequest = service.getUserData("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",userName)
+        val userRequest = service.getUserData("",userName)
         userRequest.enqueue(object : Callback<UserData> {
             override fun onResponse(
                 call: retrofit2.Call<UserData>,
@@ -77,7 +77,7 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
             }
         })
 
-        val repoRequest = service.getUserReposList("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",userName,"100",pageCount.toString())
+        val repoRequest = service.getUserReposList("",userName,"100",pageCount.toString())
         repoRequest.enqueue(object : Callback<List<UserRepo>> {
             override fun onResponse(
                 call: retrofit2.Call<List<UserRepo>>,
@@ -117,7 +117,7 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1)) {
-                    val repoRequest = service.getUserReposList("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",userName,"100",pageCount.toString())
+                    val repoRequest = service.getUserReposList("",userName,"100",pageCount.toString())
                     repoRequest.enqueue(object : Callback<List<UserRepo>> {
                         override fun onResponse(
                             call: retrofit2.Call<List<UserRepo>>,

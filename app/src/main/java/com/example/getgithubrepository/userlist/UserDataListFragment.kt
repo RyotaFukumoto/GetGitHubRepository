@@ -54,7 +54,7 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
                 if (!recyclerView.canScrollVertically(1)) {
                     val userNameTextView = binding.userSearchText
                     val text = userNameTextView.text.toString()
-                    val request = service.getUserNameList("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",text,"100",pageCount.toString())
+                    val request = service.getUserNameList("",text,"100",pageCount.toString())
                     request.enqueue(object : Callback<UserDataList> {
                         override fun onResponse(
                             call: retrofit2.Call<UserDataList>,
@@ -96,7 +96,7 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
         val text = userNameTextView.text.toString()
         // 通信用のクラスに分ける
 
-        val request = service.getUserNameList("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",text,"100",pageCount.toString())
+        val request = service.getUserNameList("",text,"100",pageCount.toString())
         request.enqueue(object : Callback<UserDataList> {
             override fun onResponse(
                 call: retrofit2.Call<UserDataList>,
