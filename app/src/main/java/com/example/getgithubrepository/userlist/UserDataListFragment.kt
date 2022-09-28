@@ -1,31 +1,24 @@
 package com.example.getgithubrepository.userlist
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.getgithubrepository.Constants
 import com.example.getgithubrepository.R
-import com.example.getgithubrepository.userrepo.UserRepoListFragment
 import com.example.getgithubrepository.databinding.FragmentUserDataListBinding
-import com.example.getgithubrepository.model.*
+import com.example.getgithubrepository.model.APIClient
 import com.example.getgithubrepository.model.userdata.UserDataViewModel
 import com.example.getgithubrepository.model.userdata.UserListData
-import com.example.getgithubrepository.model.userdatalist.UserDataList
 import com.example.getgithubrepository.model.userdatalist.UserDataListViewModel
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
+import com.example.getgithubrepository.userrepo.UserRepoListFragment
 
 
 class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickListener {
@@ -36,12 +29,7 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
     private lateinit var adapter: UserListRecyclerViewAdapter
     private var pageCount = 1
     private var userDataListViewModel: UserDataListViewModel = UserDataListViewModel()
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.github.com/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val service = retrofit.create(GitHubService::class.java)
+    private var upDateCheck: Boolean = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -59,15 +47,22 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
                 if (!recyclerView.canScrollVertically(1)) {
                     val userNameTextView = binding.userSearchText
                     val userName = userNameTextView.text.toString()
-                     APIClient().getUserNameList(userName, pageCount.toString()) { response ->
-                         userDataListViewModel.initUserDataListParameter(response)
-                         recyclerView.adapter = UserListRecyclerViewAdapter(
-                             view.context,
-                             userDataListViewModel.get().items,
-                             this@UserDataListFragment
-                         )
-                         pageCount++
-                     }
+                    if (upDateCheck) {
+                        APIClient().getUserNameList(userName, pageCount.toString()) { response ->
+                            userDataListViewModel.initUserDataListParameter(response)
+                            recyclerView.adapter = UserListRecyclerViewAdapter(
+                                view.context,
+                                userDataListViewModel.get().items,
+                                this@UserDataListFragment
+                            )
+                            if (response.items.size == Constants.PER_PAGE_HUNDRED) {
+                                pageCount++
+                            } else {
+                                upDateCheck = false
+                            }
+
+                        }
+                    }
                 }
             }
         })
@@ -77,6 +72,8 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View {
         binding = FragmentUserDataListBinding.inflate(inflater, container, false)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity).supportActionBar?.setHomeButtonEnabled(false)
         return binding.root
     }
 
@@ -85,9 +82,8 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
 
         val userNameTextView = binding.userSearchText
         val userName = userNameTextView.text.toString()
-        // 通信用のクラスに分ける
-        APIClient().getUserNameList(userName, pageCount.toString()) { response ->
-            if (response != null) {
+        if (upDateCheck) {
+            APIClient().getUserNameList(userName, pageCount.toString()) { response ->
                 userDataListViewModel.initUserDataListParameter(response)
                 if (v != null) {
                     recyclerView.adapter = UserListRecyclerViewAdapter(
@@ -95,12 +91,16 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
                         userDataListViewModel.get().items,
                         this@UserDataListFragment
                     )
+                    if (response.items.size == Constants.PER_PAGE_HUNDRED) {
+                        pageCount++
+                    } else {
+                        upDateCheck = false
+                    }
                 }
-                pageCount++
             }
         }
     }
-    
+
     override fun onUserItemClick(userListData: UserListData) {
         userDataViewModel.initUserDataParameter(userListData)
         val userFragment = UserRepoListFragment()

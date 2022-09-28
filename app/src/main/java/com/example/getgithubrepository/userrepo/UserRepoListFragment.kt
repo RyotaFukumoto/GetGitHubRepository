@@ -3,10 +3,11 @@ package com.example.getgithubrepository.userrepo
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -14,18 +15,13 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.getgithubrepository.Constants
 import com.example.getgithubrepository.R
 import com.example.getgithubrepository.databinding.FragmentUserRepoListBinding
-import com.example.getgithubrepository.model.*
+import com.example.getgithubrepository.model.APIClient
 import com.example.getgithubrepository.model.userdata.UserDataViewModel
-import com.example.getgithubrepository.model.userdatalist.UserData
 import com.example.getgithubrepository.model.userrepo.UserRepo
 import com.example.getgithubrepository.model.userrepo.UserRepoViewModel
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
 
 
 class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
@@ -34,11 +30,8 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: UserRepoRecyclerViewAdapter
     private var pageCount = 1
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.github.com/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val service = retrofit.create(GitHubService::class.java)
+    private var upDateCheck: Boolean = true
+
     private var mContext: Context? = null
 
     private val responseBody: UserRepoViewModel = UserRepoViewModel()
@@ -46,69 +39,48 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        binding = FragmentUserRepoListBinding.inflate(inflater, container, false)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.setHomeButtonEnabled(true)
+        val imageView = binding.userDataImage
+        val userNameTextView = binding.userDataName
+        val userFullNameTextView = binding.userDataFullName
+        val followers = binding.followers
+        val following = binding.following
+
         val userName = userDataViewModel.get().login
         mContext = inflater.context
-        val userRequest = service.getUserData("",userName)
-        userRequest.enqueue(object : Callback<UserData> {
-            override fun onResponse(
-                call: retrofit2.Call<UserData>,
-                response: Response<UserData>
-            ) {
-                try{
-                    if (response.body() != null) {
-                        val arr: UserData = response.body()!!
-                        val imageView = binding.userDataImage
-                        val userNameTextView = binding.userDataName
-                        val userFullNameTextView = binding.userDataFullName
-                        val followers = binding.followers
-                        val following = binding.following
-                        Glide.with(inflater.context).load(arr.avatar_url).into(imageView)
-                        userNameTextView.text = getString(R.string.user_name,arr.login)
-                        userFullNameTextView.text = getString(R.string.user_full_name,arr.name)
-                        followers.text = getString(R.string.user_followers,arr.followers.toString())
-                        following.text = getString(R.string.user_following,arr.following.toString())
-                        Log.d("onResponse", arr.toString())
-                    }
-                }catch (e: IOException){
-                    Log.d("onResponse", "IOException")
+        APIClient().getUserData(userName) { userData ->
+            Glide.with(inflater.context).load(userData.avatar_url).into(imageView)
+            userNameTextView.text = getString(R.string.user_name,userData.login)
+            userFullNameTextView.text = getString(R.string.user_full_name,userData.name)
+            followers.text = getString(R.string.user_followers,userData.followers.toString())
+            following.text = getString(R.string.user_following,userData.following.toString())
+        }
+        if (upDateCheck) {
+            APIClient().getUserReposList(userName, pageCount) { userRepoList ->
+                responseBody.initUserRepoParameter(userRepoList as MutableList)
+                recyclerView.adapter = UserRepoRecyclerViewAdapter(
+                    inflater.context,
+                    responseBody.get(),
+                    this@UserRepoListFragment
+                )
+                if (userRepoList.size == Constants.PER_PAGE_HUNDRED) {
+                    pageCount++
+                } else {
+                    upDateCheck = false
                 }
             }
-
-            override fun onFailure(call: retrofit2.Call<UserData>, t: Throwable) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
-
-        val repoRequest = service.getUserReposList("",userName,"100",pageCount.toString())
-        repoRequest.enqueue(object : Callback<List<UserRepo>> {
-            override fun onResponse(
-                call: retrofit2.Call<List<UserRepo>>,
-                response: Response<List<UserRepo>>
-            ) {
-                try{
-                    if (response.body() != null) {
-                        val userRepoList: List<UserRepo>? = response.body()
-                        responseBody.initUserRepoParameter(userRepoList as MutableList)
-                        recyclerView.adapter = UserRepoRecyclerViewAdapter(inflater.context,responseBody.get(),this@UserRepoListFragment)
-                        Log.d("onResponse", responseBody.toString())
-                        pageCount++
-                    }
-                }catch (e: IOException){
-                    Log.d("onResponse", "IOException")
-                }
-            }
-
-            override fun onFailure(call: retrofit2.Call<List<UserRepo>>, t: Throwable) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
-        binding = FragmentUserRepoListBinding.inflate(inflater, container, false)
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = binding.userRepoList
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.setHomeButtonEnabled(true)
+        setHasOptionsMenu(true)
         val dividerItemDecoration =
             DividerItemDecoration(view.context , LinearLayoutManager(view.context).orientation)
         recyclerView.addItemDecoration(dividerItemDecoration)
@@ -120,29 +92,21 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1)) {
-                    val repoRequest = service.getUserReposList("",userName,"100",pageCount.toString())
-                    repoRequest.enqueue(object : Callback<List<UserRepo>> {
-                        override fun onResponse(
-                            call: retrofit2.Call<List<UserRepo>>,
-                            response: Response<List<UserRepo>>
-                        ) {
-                            try{
-                                if (response.body() != null && response.body()!!.isNotEmpty()) {
-                                    responseBody.add(response.body() as MutableList)
-                                    recyclerView.adapter = UserRepoRecyclerViewAdapter(view.context,responseBody.get(),this@UserRepoListFragment)
-                                    Log.d("onResponse", responseBody.toString())
-                                    pageCount++
-
-                                }
-                            }catch (e: IOException){
-                                Log.d("onResponse", "IOException")
+                    if (upDateCheck) {
+                        APIClient().getUserReposList(userName, pageCount) { userRepoList ->
+                            responseBody.add(userRepoList as MutableList)
+                            recyclerView.adapter = UserRepoRecyclerViewAdapter(
+                                view.context,
+                                responseBody.get(),
+                                this@UserRepoListFragment
+                            )
+                            if (userRepoList.size == Constants.PER_PAGE_HUNDRED) {
+                                pageCount++
+                            } else {
+                                upDateCheck = false
                             }
                         }
-
-                        override fun onFailure(call: retrofit2.Call<List<UserRepo>>, t: Throwable) {
-                            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                        }
-                    })
+                    }
                 }
             }
         })
@@ -153,5 +117,17 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
         val builder = CustomTabsIntent.Builder()
         val customTabsIntent = builder.build()
         mContext?.let { customTabsIntent.launchUrl(it, Uri.parse(url)) }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> requireFragmentManager().popBackStack().run {
+                (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+                (activity as AppCompatActivity).supportActionBar?.setHomeButtonEnabled(false)
+            }
+
+            else -> {}
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

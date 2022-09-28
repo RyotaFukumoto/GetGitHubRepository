@@ -18,5 +18,4 @@ class MainActivity : AppCompatActivity(){
             UserDataListFragment()
         ).commit()
     }
-
 }
