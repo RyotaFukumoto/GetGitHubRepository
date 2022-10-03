@@ -1,8 +1,8 @@
-package com.example.getgithubrepository.model
+package com.example.getgithubrepository.model.API
 
 import android.util.Log
 import com.example.getgithubrepository.Constants
-import com.example.getgithubrepository.PrivateConstants
+import com.example.getgithubrepository.R
 import com.example.getgithubrepository.model.userdatalist.UserData
 import com.example.getgithubrepository.model.userdatalist.UserDataList
 import com.example.getgithubrepository.model.userrepo.UserRepo
@@ -21,7 +21,7 @@ class APIClient {
     private val service = retrofit.create(GitHubService::class.java)
 
     fun getUserNameList(userName: String, pageCount: String, callback: (UserDataList) -> Unit) {
-        val request = service.getUserNameList(PrivateConstants.GITHUB_TOKEN, userName, Constants.PER_PAGE_HUNDRED.toString(), pageCount)
+        val request = service.getUserNameList(R.string.github_token.toString(), userName, Constants.PER_PAGE_HUNDRED.toString(), pageCount)
         request.enqueue(object : Callback<UserDataList> {
             override fun onResponse(
                 call: Call<UserDataList>,
@@ -46,7 +46,7 @@ class APIClient {
     }
 
     fun getUserData(userName: String, callback: (UserData) -> Unit) {
-        val userRequest = service.getUserData(PrivateConstants.GITHUB_TOKEN,userName)
+        val userRequest = service.getUserData(R.string.github_token.toString(),userName)
         userRequest.enqueue(object : Callback<UserData> {
             override fun onResponse(
                 call: Call<UserData>,
@@ -70,7 +70,7 @@ class APIClient {
     }
 
     fun getUserReposList(userName: String, pageCount: Int,callback: (List<UserRepo>) -> Unit){
-        val repoRequest = service.getUserReposList(PrivateConstants.GITHUB_TOKEN, userName, Constants.PER_PAGE_HUNDRED.toString(), pageCount.toString())
+        val repoRequest = service.getUserReposList(R.string.github_token.toString(), userName, Constants.PER_PAGE_HUNDRED.toString(), pageCount.toString())
         repoRequest.enqueue(object : Callback<List<UserRepo>> {
             override fun onResponse(
                 call: Call<List<UserRepo>>,
