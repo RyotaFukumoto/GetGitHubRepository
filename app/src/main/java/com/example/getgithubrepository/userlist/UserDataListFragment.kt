@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
@@ -25,6 +26,8 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
     private lateinit var binding: FragmentUserDataListBinding
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var progressBar: ProgressBar
+
     private lateinit var adapter: UserListRecyclerViewAdapter
 
     private var pageCount = 1
@@ -75,6 +78,8 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View {
         binding = FragmentUserDataListBinding.inflate(inflater, container, false)
+        progressBar = binding.progress
+        progressBar.visibility = View.INVISIBLE
         return binding.root
     }
 
@@ -82,6 +87,9 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
     override fun onClick(v: View?) {
         val userNameTextView = binding.userSearchText
         val userName = userNameTextView.text.toString()
+        if (!userName.isEmpty()) {
+            progressBar.visibility = View.VISIBLE
+        }
         if (upDateCheck) {
             APIClient().getUserNameList(userName, pageCount.toString()) { response ->
                 userDataListViewModel.initUserDataListParameter(response)
@@ -97,6 +105,7 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
                         upDateCheck = false
                     }
                 }
+                progressBar.visibility = View.INVISIBLE
             }
         }
     }

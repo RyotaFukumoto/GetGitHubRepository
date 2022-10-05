@@ -47,14 +47,19 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
         val followers = binding.followers
         val following = binding.following
         val userName = userDataViewModel.get().login
-
+        val userProcess = binding.userProgress
+        val repoProcess = binding.repoProgress
         mContext = inflater.context
+
+        userProcess.visibility = View.VISIBLE
+        repoProcess.visibility = View.VISIBLE
         APIClient().getUserData(userName) { userData ->
             Glide.with(inflater.context).load(userData.avatar_url).into(imageView)
             userNameTextView.text = getString(R.string.user_name,userData.login)
             userFullNameTextView.text = getString(R.string.user_full_name,userData.name)
             followers.text = getString(R.string.user_followers,userData.followers.toString())
             following.text = getString(R.string.user_following,userData.following.toString())
+            userProcess.visibility = View.INVISIBLE
         }
         if (upDateCheck) {
             APIClient().getUserReposList(userName, pageCount) { userRepoList ->
@@ -69,8 +74,10 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
                 } else {
                     upDateCheck = false
                 }
+                repoProcess.visibility = View.INVISIBLE
             }
         }
+
         return binding.root
     }
 
