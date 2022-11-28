@@ -1,4 +1,4 @@
-package com.example.getgithubrepository.model.API
+package com.example.getgithubrepository.model.api
 
 import com.example.getgithubrepository.model.userdatalist.UserData
 import com.example.getgithubrepository.model.userdatalist.UserDataList

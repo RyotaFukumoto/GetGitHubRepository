@@ -1,4 +1,4 @@
-package com.example.getgithubrepository.model.API
+package com.example.getgithubrepository.model.api
 
 import android.util.Log
 import com.example.getgithubrepository.Constants
@@ -21,7 +21,7 @@ class APIClient {
     private val service = retrofit.create(GitHubService::class.java)
 
     fun getUserNameList(userName: String, pageCount: String, callback: (UserDataList) -> Unit) {
-        val request = service.getUserNameList(R.string.github_token.toString(), userName, Constants.PER_PAGE_HUNDRED.toString(), pageCount)
+        val request = service.getUserNameList(R.string.github_token.toString(), userName, Constants.PER_PAGE_HUNDRED, pageCount)
         request.enqueue(object : Callback<UserDataList> {
             override fun onResponse(
                 call: Call<UserDataList>,
@@ -52,13 +52,13 @@ class APIClient {
                 call: Call<UserData>,
                 response: Response<UserData>
             ) {
-                try{
-                    if (response.body() != null) {
-                        val userData: UserData = response.body()!!
-                        callback(userData)
-                        Log.d("onResponse", userData.toString())
-                    }
-                }catch (e: IOException){
+                try {
+                    response.body() ?: return
+                    val userData: UserData = response.body()!!
+                    callback(userData)
+                    Log.d("onResponse", userData.toString())
+
+                } catch (e: IOException) {
                     Log.d("onResponse", "IOException")
                 }
             }
@@ -70,20 +70,20 @@ class APIClient {
     }
 
     fun getUserReposList(userName: String, pageCount: Int,callback: (List<UserRepo>) -> Unit){
-        val repoRequest = service.getUserReposList(R.string.github_token.toString(), userName, Constants.PER_PAGE_HUNDRED.toString(), pageCount.toString())
+        val repoRequest = service.getUserReposList(R.string.github_token.toString(), userName, Constants.PER_PAGE_HUNDRED, pageCount.toString())
         repoRequest.enqueue(object : Callback<List<UserRepo>> {
             override fun onResponse(
                 call: Call<List<UserRepo>>,
                 response: Response<List<UserRepo>>
             ) {
-                try{
+                try {
                     if (response.body() != null && response.body()!!.isNotEmpty()) {
                         val userRepoList: List<UserRepo> = response.body() as List<UserRepo>
                         callback(userRepoList)
                         Log.d("onResponse", userRepoList.toString())
 
                     }
-                }catch (e: IOException){
+                } catch (e: IOException) {
                     Log.d("onResponse", "IOException")
                 }
             }

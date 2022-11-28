@@ -16,7 +16,7 @@ import com.bumptech.glide.Glide
 import com.example.getgithubrepository.Constants
 import com.example.getgithubrepository.R
 import com.example.getgithubrepository.databinding.FragmentUserRepoListBinding
-import com.example.getgithubrepository.model.API.APIClient
+import com.example.getgithubrepository.model.api.APIClient
 import com.example.getgithubrepository.model.userdata.UserDataViewModel
 import com.example.getgithubrepository.model.userrepo.UserRepo
 import com.example.getgithubrepository.model.userrepo.UserRepoViewModel
@@ -32,7 +32,6 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
 
     private var pageCount = 1
     private var upDateCheck: Boolean = true
-    private var mContext: Context? = null
 
     private val responseBody: UserRepoViewModel = UserRepoViewModel()
     override fun onCreateView(
@@ -49,7 +48,6 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
         val userName = userDataViewModel.get().login
         val userProcess = binding.userProgress
         val repoProcess = binding.repoProgress
-        mContext = inflater.context
 
         userProcess.visibility = View.VISIBLE
         repoProcess.visibility = View.VISIBLE
@@ -69,7 +67,7 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
                     responseBody.get(),
                     this@UserRepoListFragment
                 )
-                if (userRepoList.size == Constants.PER_PAGE_HUNDRED) {
+                if (userRepoList.size.toString() == Constants.PER_PAGE_HUNDRED) {
                     pageCount++
                 } else {
                     upDateCheck = false
@@ -91,9 +89,12 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
         adapter = UserRepoRecyclerViewAdapter(view.context, mutableListOf(),this)
 
         recyclerView = binding.userRepoList
-        recyclerView.addItemDecoration(dividerItemDecoration)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(view.context)
+        recyclerView.let {
+            it.addItemDecoration(dividerItemDecoration)
+            it.adapter = adapter
+            it.layoutManager = LinearLayoutManager(view.context)
+        }
+
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -106,7 +107,7 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
                                 responseBody.get(),
                                 this@UserRepoListFragment
                             )
-                            if (userRepoList.size == Constants.PER_PAGE_HUNDRED) {
+                            if (userRepoList.size.toString() == Constants.PER_PAGE_HUNDRED) {
                                 pageCount++
                             } else {
                                 upDateCheck = false
@@ -122,7 +123,7 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
         val url = repo.html_url
         val builder = CustomTabsIntent.Builder()
         val customTabsIntent = builder.build()
-        mContext?.let { customTabsIntent.launchUrl(it, Uri.parse(url)) }
+        context?.let { customTabsIntent.launchUrl(it, Uri.parse(url)) }
     }
 
 }

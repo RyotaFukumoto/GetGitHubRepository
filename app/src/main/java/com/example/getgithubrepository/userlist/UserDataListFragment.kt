@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.getgithubrepository.Constants
 import com.example.getgithubrepository.R
 import com.example.getgithubrepository.databinding.FragmentUserDataListBinding
-import com.example.getgithubrepository.model.API.APIClient
+import com.example.getgithubrepository.model.api.APIClient
 import com.example.getgithubrepository.model.userdata.UserDataViewModel
 import com.example.getgithubrepository.model.userdata.UserListData
 import com.example.getgithubrepository.model.userdatalist.UserDataListViewModel
@@ -44,9 +44,12 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
         adapter = UserListRecyclerViewAdapter(view.context, listOf(),this)
 
         recyclerView = binding.list
-        recyclerView.addItemDecoration(dividerItemDecoration)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(view.context)
+        recyclerView.let {
+            it.addItemDecoration(dividerItemDecoration)
+            it.adapter = adapter
+            it.layoutManager = LinearLayoutManager(view.context)
+        }
+
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -61,7 +64,7 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
                                 userDataListViewModel.get().items,
                                 this@UserDataListFragment
                             )
-                            if (response.items.size == Constants.PER_PAGE_HUNDRED) {
+                            if (response.items.size.toString() == Constants.PER_PAGE_HUNDRED) {
                                 pageCount++
                             } else {
                                 upDateCheck = false
@@ -99,7 +102,7 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
                         userDataListViewModel.get().items,
                         this@UserDataListFragment
                     )
-                    if (response.items.size == Constants.PER_PAGE_HUNDRED) {
+                    if (response.items.size.toString() == Constants.PER_PAGE_HUNDRED) {
                         pageCount++
                     } else {
                         upDateCheck = false
