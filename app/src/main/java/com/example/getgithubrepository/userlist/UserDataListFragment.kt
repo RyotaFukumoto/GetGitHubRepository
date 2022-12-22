@@ -64,7 +64,7 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
                                 userDataListViewModel.get().items,
                                 this@UserDataListFragment
                             )
-                            if (response.items.size.toString() == Constants.PER_PAGE_HUNDRED) {
+                            if (response.items.size == Constants.PER_PAGE_HUNDRED) {
                                 pageCount++
                             } else {
                                 upDateCheck = false
@@ -102,7 +102,7 @@ class UserDataListFragment : Fragment(), View.OnClickListener, OnUserItemClickLi
                         userDataListViewModel.get().items,
                         this@UserDataListFragment
                     )
-                    if (response.items.size.toString() == Constants.PER_PAGE_HUNDRED) {
+                    if (response.items.size == Constants.PER_PAGE_HUNDRED) {
                         pageCount++
                     } else {
                         upDateCheck = false

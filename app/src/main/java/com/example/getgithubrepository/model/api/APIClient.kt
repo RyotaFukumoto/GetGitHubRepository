@@ -21,7 +21,7 @@ class APIClient {
     private val service = retrofit.create(GitHubService::class.java)
 
     fun getUserNameList(userName: String, pageCount: String, callback: (UserDataList) -> Unit) {
-        val request = service.getUserNameList(R.string.github_token.toString(), userName, Constants.PER_PAGE_HUNDRED, pageCount)
+        val request = service.getUserNameList(R.string.github_token.toString(), userName, Constants.PER_PAGE_HUNDRED.toString(), pageCount)
         request.enqueue(object : Callback<UserDataList> {
             override fun onResponse(
                 call: Call<UserDataList>,
@@ -70,7 +70,7 @@ class APIClient {
     }
 
     fun getUserReposList(userName: String, pageCount: Int,callback: (List<UserRepo>) -> Unit){
-        val repoRequest = service.getUserReposList(R.string.github_token.toString(), userName, Constants.PER_PAGE_HUNDRED, pageCount.toString())
+        val repoRequest = service.getUserReposList(R.string.github_token.toString(), userName, Constants.PER_PAGE_HUNDRED.toString(), pageCount.toString())
         repoRequest.enqueue(object : Callback<List<UserRepo>> {
             override fun onResponse(
                 call: Call<List<UserRepo>>,

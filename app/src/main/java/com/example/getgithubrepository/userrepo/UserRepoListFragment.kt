@@ -67,7 +67,7 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
                     responseBody.get(),
                     this@UserRepoListFragment
                 )
-                if (userRepoList.size.toString() == Constants.PER_PAGE_HUNDRED) {
+                if (userRepoList.size == Constants.PER_PAGE_HUNDRED) {
                     pageCount++
                 } else {
                     upDateCheck = false
@@ -107,7 +107,7 @@ class UserRepoListFragment : Fragment(), OnUserRepoItemClickListener {
                                 responseBody.get(),
                                 this@UserRepoListFragment
                             )
-                            if (userRepoList.size.toString() == Constants.PER_PAGE_HUNDRED) {
+                            if (userRepoList.size == Constants.PER_PAGE_HUNDRED) {
                                 pageCount++
                             } else {
                                 upDateCheck = false
